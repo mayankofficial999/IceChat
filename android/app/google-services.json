@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1041765518368",
+    "project_id": "icechat-cec9f",
+    "storage_bucket": "icechat-cec9f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041765518368:android:db1a7b4af92a7153844045",
+        "android_client_info": {
+          "package_name": "com.example.icechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1041765518368-beh9bac6aoo79mcn5ghut7a3h0migeqg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.icechat",
+            "certificate_hash": "49ac0d7d7233437e3fbdcf9fa1f6858a739d4552"
+          }
+        },
+        {
+          "client_id": "1041765518368-lqt494pg9192nrv0o7dksg089tcedkgd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8qLu4lo4JtTYL5uffF70f_4RQG5Kw-kE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1041765518368-lqt494pg9192nrv0o7dksg089tcedkgd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1041765518368-38j82hdef47mhe808sku8oc63a79absi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.icechat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
