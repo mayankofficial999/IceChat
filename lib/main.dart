@@ -25,11 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(child: 
        ElevatedButton(
               onPressed: () {
-                // await ref.child("Users").child("8ewdhuhde").set({
-                //   'message_received':'Hey! Old Pro','message_sent':'Hey! Old Noob'
+                // ref.child("Users").child("8ewdhuhde").set({
+                //   'message_received':'Hey! Pro','message_sent':'Hey! Noob'
                 // });
-                //ref.child("Users").child("UID").child("message_sent").set("Hi!");
-                //print('This Line Executes.');
+                // ref.child("Users").child("UID").child("message_sent").set("Hi!");
+                print('This Line Executes.');
                 ref.once().then((DataSnapshot data) {
                   print('Data is ${data.value}');
                 });
