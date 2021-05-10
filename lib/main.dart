@@ -20,17 +20,17 @@ class _LoginScreenState extends State<LoginScreen> {
     final ref = fb.reference();
     return Scaffold(
       appBar: AppBar(
-          title: Text('Test'),
+          title: Center(child:Text('Test')),
         ),
       body: Center(child: 
        ElevatedButton(
-              onPressed: () async {
+              onPressed: () {
                 // await ref.child("Users").child("8ewdhuhde").set({
                 //   'message_received':'Hey! Old Pro','message_sent':'Hey! Old Noob'
                 // });
                 //ref.child("Users").child("UID").child("message_sent").set("Hi!");
-                print('This Line Executes.');
-                await ref.once().then((DataSnapshot data) {
+                //print('This Line Executes.');
+                ref.once().then((DataSnapshot data) {
                   print('Data is ${data.value}');
                 });
               },

@@ -6,6 +6,8 @@
 	<string>1041765518368-38j82hdef47mhe808sku8oc63a79absi.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.1041765518368-38j82hdef47mhe808sku8oc63a79absi</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1041765518368-beh9bac6aoo79mcn5ghut7a3h0migeqg.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAE6xbGHJ6cSfiwqgTTNmCPRUh6wPfpp0Y</string>
 	<key>GCM_SENDER_ID</key>
@@ -19,16 +21,18 @@
 	<key>STORAGE_BUCKET</key>
 	<string>icechat-cec9f.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:1041765518368:ios:18dfa733ce48ee29844045</string>
+	<key>DATABASE_URL</key>
+	<string>https://icechat-cec9f-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>
