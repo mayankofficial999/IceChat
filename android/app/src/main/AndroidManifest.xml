@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.icechat">
    <application
-        android:label="icechat"
+        android:label="IceChat"
         android:icon="@mipmap/launcher_icon"
         android:requestLegacyExternalStorage="true">
         <activity
