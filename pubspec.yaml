@@ -31,7 +31,8 @@ dependencies:
   flutter_signin_button: "^2.0.0"
   cached_network_image: "^3.0.0"
   image_picker: "^0.7.4"
-  shared_preferences: "^2.0.5"
+  flutter_native_splash: "^1.1.8+4"
+  flutter_launcher_icons: "^0.9.0"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,7 +44,15 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_native_splash:
+  color: "#18B6FF"
+  image: assets/background/splash.png
+  android_gravity: fill
+  ios_content_mode: fill
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/iceLogo.jpg"
 # The following section is specific to Flutter.
 flutter:
 
