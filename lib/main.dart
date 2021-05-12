@@ -63,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
   bool loading=false;
   File _image;
   final picker = ImagePicker();
+  int c=0;
   //final prefs = await SharedPreferences.getInstance();
   final myController = TextEditingController();
   Future getImage() async {
@@ -83,13 +84,21 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
     if (user == null) {
       setState(() {
       signedIn=false;
-      });
+      if(c!=0)
       print('User signed out');
+      c=0;
+      });
     } else {
       setState(() {
       signedIn=true;
+      c++;
+      if(c>5)
+      c=2;
+      //print(c);
+      if(c==1)
       myController.text=FirebaseAuth.instance.currentUser.displayName;
       });
+      if(c==1)
       print('User signed in');
     }
   });
@@ -214,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
           width: 300,
           ),
       SizedBox(height: 10,),
-      //ElevatedButton(onPressed: ()async { setState((){loading=true;});await GoogleSignIn().signOut();await FirebaseAuth.instance.signOut();setState((){loading=false;});}, child: Text('Logout')),
+      ElevatedButton(onPressed: ()async { setState((){loading=true;});await GoogleSignIn().signOut();await FirebaseAuth.instance.signOut();setState((){loading=false;});}, child: Text('Logout')),
       ElevatedButton(child: Text('Continue'),onPressed:(){} ,),
     ],
     );
