@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-//import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:icechat/HomeScreen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-Future<User> signInWithGoogle() async {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin {
+  User chatUser;
+  bool signedIn=false;
+  bool loading=false;
+  File _image;
+  final picker = ImagePicker();
+  int c=0;
+  //final prefs = await SharedPreferences.getInstance();
+  final myController = TextEditingController();
+  final fb = FirebaseDatabase.instance;
+
+  Future<User> signInWithGoogle() async {
   FirebaseAuth auth = FirebaseAuth.instance;
   UserCredential userCopy;
   // Trigger the authentication flow
@@ -41,23 +58,11 @@ Future<User> signInWithGoogle() async {
       print(e);
     }
   }
+  else
+    setState((){loading=false;});
   return userCopy.user;
 }
-
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin {
-  User chatUser;
-  bool signedIn=false;
-  bool loading=false;
-  File _image;
-  final picker = ImagePicker();
-  int c=0;
-  //final prefs = await SharedPreferences.getInstance();
-  final myController = TextEditingController();
+//Get Profile Picture to set
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
@@ -68,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
       }
     });
   }
-  //final fb = FirebaseDatabase.instance;
+  
   void checkSignIn(){
     FirebaseAuth.instance
     .authStateChanges()
@@ -95,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
     }
   });
   }
-
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -107,7 +111,6 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     checkSignIn();
-    //final ref = fb.reference();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -145,7 +148,9 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
         ),
       );
   }
+
   Widget loginScreen(){
+    final ref = fb.reference();
     return Column(
           children:
           [
@@ -167,11 +172,17 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
               onPressed: () async {
                 setState((){loading=true;});
                 chatUser= await signInWithGoogle();
+                setState((){loading=false;});
+                //print(FirebaseAuth.instance.currentUser.uid);
+                ref.child('IceChat').child('UserList').child('\"${FirebaseAuth.instance.currentUser.uid}\"').set({
+                    '\"Name\"':'\"${FirebaseAuth.instance.currentUser.displayName}\"',
+                    '\"photoUrl\"':'\"${FirebaseAuth.instance.currentUser.photoURL}\"',
+                    '\"Email\"':'\"${FirebaseAuth.instance.currentUser.email}\"'
+                  });
                 // prefs.setString('DP', chatUser.photoURL);
                 // prefs.setString('Name', chatUser.displayName);
                 // prefs.setString('Mail', chatUser.email);
                 // prefs.setString('UID', chatUser.uid);
-                setState((){loading=false;});
                 },
             )
           ]
@@ -216,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
           ),
       SizedBox(height: 10,),
       ElevatedButton(onPressed: ()async { setState((){loading=true;});await GoogleSignIn().signOut();await FirebaseAuth.instance.signOut();setState((){loading=false;});}, child: Text('Logout')),
-      ElevatedButton(child: Text('Continue'),onPressed:(){} ,),
+      ElevatedButton(child: Text('Continue'),onPressed:(){Navigator.push(context,MaterialPageRoute(builder: (context) => HomePage()),);} ,),
     ],
     );
   }
