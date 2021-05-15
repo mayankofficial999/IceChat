@@ -1,8 +1,12 @@
 import 'dart:convert';
 //import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:icechat/ChatScreen.dart';
+import 'package:icechat/Register.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,13 +18,18 @@ class _HomePageState extends State<HomePage> {
   Map<String, dynamic> user;
   List<dynamic> userList=[];
   int c=0;
+  bool load=false;
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return new WillPopScope(
+    onWillPop: () async => false,
+    child:DefaultTabController(
       initialIndex: 0,
       length: 2,
-      child:Scaffold(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.blue,          
           title: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
             children:[
@@ -34,8 +43,21 @@ class _HomePageState extends State<HomePage> {
                 textAlign: TextAlign.center,
               ),
             PopupMenuButton(itemBuilder: (context) => [
-                PopupMenuItem(child: Text('Profile')),
-                PopupMenuItem(child: Text('LogOut'))
+                PopupMenuItem(child: 
+                  TextButton(child:Text('Profile'),onPressed: (){},)
+                ),
+                PopupMenuItem(child:
+                  TextButton(child:
+                    Text('Sign Out'),
+                    onPressed: ()async{
+                      setState((){load=true;});
+                      await GoogleSignIn().signOut();
+                      await FirebaseAuth.instance.signOut();
+                      setState((){load=false;});
+                      Navigator.push(context,MaterialPageRoute(builder: (context) => LoginScreen()));
+                      },
+                  )
+                )
               ],
               tooltip: 'Settings',
               child: Icon(Icons.more_vert),)
@@ -53,23 +75,28 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: load? 
+        Center(child:SizedBox(child:CircularProgressIndicator(
+          backgroundColor: Colors.white,
+          valueColor: AlwaysStoppedAnimation(Colors.lightBlue),
+          strokeWidth: 5,
+        ),height: 100,width: 100,),)
+        :TabBarView(
             children: [
               Column(children: [chats()],),
               Column(children: [users()],),
             ]
           )
     )
+    )
     );
   }
 
-  Widget chats()  
-  {
+  Widget chats() {
     return Container();  
   }
 
-  Widget users()
-  {
+  Widget users() {
     final refer=ins.reference();
     refer.child('IceChat').child('UserList').once().then(
       (DataSnapshot snapshot)
@@ -87,10 +114,11 @@ class _HomePageState extends State<HomePage> {
         );
         if(c==user.keys.length)
         print(userList);
-        if(c>3)
-        c=3;
+        if(c>user.keys.length)
+        c=user.keys.length;
       }
     );
+    //print(userList);
     return new ListView.builder(
       shrinkWrap: true,
       itemCount: userList.length,
@@ -118,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                     ]),
                   isThreeLine: true,
                   trailing: Column(children:[SizedBox(height: 35,),Text('08:25 pm')]),
-                  onTap: (){},
+                  onTap: (){Navigator.push(context,MaterialPageRoute(builder: (context) => ChatScreen(index,user,userList)),);},
                 )
               ],
           ),

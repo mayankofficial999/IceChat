@@ -114,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Center(child:Text('Register',style: TextStyle(color: Colors.grey[800]),)),
         ),
       body: Container(
@@ -226,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen>with TickerProviderStateMixin 
           width: 300,
           ),
       SizedBox(height: 10,),
-      ElevatedButton(onPressed: ()async { setState((){loading=true;});await GoogleSignIn().signOut();await FirebaseAuth.instance.signOut();setState((){loading=false;});}, child: Text('Logout')),
+      //ElevatedButton(onPressed: ()async { setState((){loading=true;});await GoogleSignIn().signOut();await FirebaseAuth.instance.signOut();setState((){loading=false;});}, child: Text('Logout')),
       ElevatedButton(child: Text('Continue'),onPressed:(){Navigator.push(context,MaterialPageRoute(builder: (context) => HomePage()),);} ,),
     ],
     );
