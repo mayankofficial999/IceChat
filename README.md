@@ -1,4 +1,4 @@
-# icechat
+# IceChat
 
 A new Flutter project.
 
