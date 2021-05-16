@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           user=jsonDecode(snapshot.value.toString());
           var it=user.keys.iterator;
           while (it.moveNext()) {
-            if(c<user.keys.length)
+            if(c<user.keys.length&&it.current!=FirebaseAuth.instance.currentUser.uid)
             userList.add(it.current);
             c++;
           }
@@ -146,7 +146,18 @@ class _HomePageState extends State<HomePage> {
                     ]),
                   isThreeLine: true,
                   trailing: Column(children:[SizedBox(height: 35,),Text('08:25 pm')]),
-                  onTap: (){Navigator.push(context,MaterialPageRoute(builder: (context) => ChatScreen(index,user,userList)),);},
+                  onTap: (){
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => ChatScreen(index,user,userList)),);
+                      refer.child('IceChat').child('UserData')
+                      .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
+                      .child('\"${userList[index]}\"')
+                      .set({
+                      '\"receive\"':"\"null\"",
+                      '\"receive_confirm\"':'\"null\"',
+                      '\"sent\"':'\"null\"',
+                      '\"sent_confirm\"':'\"null\"',
+                    });
+                    },
                 )
               ],
           ),
