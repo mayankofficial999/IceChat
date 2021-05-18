@@ -1,7 +1,10 @@
 //import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
+List msg;
 class ChatScreen extends StatefulWidget {
+  final List<dynamic> message =[];//[['Hi','send','10:00 am'],['Hello ','receive','10:01 am'],['How are you?','receive','10:01 am'],['I am Fine','send','10:02 am']]; 
   final int pos;
   final Map<String,dynamic> user;
   final List<dynamic> userList;
@@ -9,12 +12,60 @@ class ChatScreen extends StatefulWidget {
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
-
 class _ChatScreenState extends State<ChatScreen> {
-  //final ins=FirebaseDatabase.instance;
-  List<dynamic> message =[['Hi','send','10:00 am'],['Hello ','receive','10:01 am'],['How are you?','receive','10:01 am'],["I am Fine ",'send','10:02 am']];
   TextEditingController input = new TextEditingController();
   bool empty=true;
+  var adder;
+  final ins=FirebaseDatabase.instance;
+  var temp,tempSend;
+  bool enable=false;
+  void receive(){
+    final refer=ins.reference();
+    var loc=
+    refer
+    .child('IceChat')
+    .child('UserData')
+    .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
+    .child('\"${widget.userList[widget.pos]}\"')
+    .child('\"receive\"');
+    loc..onValue.listen((event) {
+      var snap=event.snapshot;
+      //message.remove(['Hello', 'receive', '13:10']);
+      if(snap.value!='null')
+      { 
+      DateTime now= new DateTime.now();
+      String currentTime;
+      currentTime=now.hour.toString()+':'+now.minute.toString()+' ';
+      setState(() {
+        enable=true;
+        temp=["${snap.value}","receive","$currentTime"];
+      });
+      //widget.message.add(temp);
+      loc.set('null');
+      //print(currentTime);
+      //message.add(['${snap.value}','receive','$currentTime']);
+      }
+      if(widget.message.isEmpty==false)
+      print(widget.message);
+      // if(this.mounted)
+      // setState(() {});
+    });
+  }
+  void send(String s){
+    final refer=ins.reference();
+    var loc=
+    refer
+    .child('IceChat')
+    .child('UserData')
+    .child('\"${widget.userList[widget.pos]}\"')
+    .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
+    .child('\"receive\"');
+    loc.set(s);
+    DateTime now= new DateTime.now();
+    String currentTime;
+    currentTime=now.hour.toString()+':'+now.minute.toString()+' ';
+    widget.message.add(["$s","sent","$currentTime"]);
+  }
   @override
   Widget build(BuildContext context) {
     //final refer=ins.reference();
@@ -62,9 +113,9 @@ class _ChatScreenState extends State<ChatScreen> {
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(child:
-                TextFormField(
+                TextFormField(textInputAction: TextInputAction.newline,
                   onChanged: (s){setState(() {empty=false;});},
-                  onFieldSubmitted:(s){input.text=s;} ,
+                  //onFieldSubmitted:(s){input.text=s;} ,
                   controller: input,
                   maxLines: null,
                   decoration: new InputDecoration(
@@ -86,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(child:
               FloatingActionButton(
                   child: input.text==''?Icon(Icons.mic,size: 30,):Icon(Icons.send_rounded,size: 30,),
-                  onPressed: (){}
+                  onPressed: (){if(input.text.trim().isEmpty==false){send(input.text.trim());setState(() {});input.text='';}}
                 ),
               padding: EdgeInsets.only(bottom:20,right: 10),
               ),
@@ -96,19 +147,22 @@ class _ChatScreenState extends State<ChatScreen> {
       ]),
     );
   }
-
   Widget chatLayout(){
+    receive();
+    if(temp!=null&&enable==true)
+    widget.message.add(temp);
+    enable=false;
     return Container(
       child: 
         ListView.builder(
-          itemCount: message.length,
+          itemCount: widget.message.length,
           itemBuilder: (BuildContext context, int index) {
             return Align(child:
               Container(
                 child:IntrinsicWidth(child:
                   Stack(children:[
                       Container(child:
-                        Text('${message[index][0]}',
+                        Text('${widget.message[index][0]}',
                         style: TextStyle(fontSize: 14,),
                         maxLines: null,
                         ),
@@ -116,7 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin: EdgeInsets.only(bottom:14),
                       ),
                       Positioned(child: 
-                      Text('${message[index][2]}',style: TextStyle(fontSize: 9),),
+                      Text('${widget.message[index][2]}',style: TextStyle(fontSize: 9),),
                       bottom: 1,
                       right: 1,
                       ),
@@ -131,7 +185,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 margin: EdgeInsets.symmetric(vertical:1,horizontal: 5),
                 constraints: BoxConstraints(minWidth: 50,maxWidth:MediaQuery.of(context).size.width*0.8,),
               ),
-              alignment: message[index][1]=='receive'?Alignment.centerLeft:Alignment.centerRight,
+              alignment: widget.message[index][1]=='receive'?Alignment.centerLeft:Alignment.centerRight,
             );
             }
           )

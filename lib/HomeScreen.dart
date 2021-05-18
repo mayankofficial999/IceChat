@@ -1,5 +1,6 @@
 import 'dart:convert';
 //import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -17,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   final ins=FirebaseDatabase.instance;
   Map<String, dynamic> user;
   List<dynamic> userList=[];
+  List<dynamic> chatList=[];
   int c=0;
   bool load=false;
   @override
@@ -83,7 +85,7 @@ class _HomePageState extends State<HomePage> {
         ),height: 100,width: 100,),)
         :TabBarView(
             children: [
-              Column(children: [chats()],),
+              Column(children: [chatList.length!=null?chats():Container()],),
               Column(children: [users()],),
             ]
           )
@@ -93,7 +95,49 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget chats() {
-    return Container();  
+    final refer=ins.reference();
+    return new ListView.builder(
+      shrinkWrap: true,
+      itemCount: chatList.length,
+      itemBuilder: (BuildContext context, int index) {
+          return Card(
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                ListTile(
+                  leading:ClipOval(child:Image.network(user['${chatList[index]}']["photoUrl"].toString())),
+                  title: Text(user['${chatList[index]}']["Name"].toString()),
+                  subtitle: Column(children:[
+                    Row(children:[
+                      Icon(Icons.check_circle_rounded,color: Colors.blue,),
+                      SizedBox(width: 10,),
+                      Flexible(child:
+                        Text(
+                          'Hi Mayank! Lorem Ipsum falana dhimkana',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ]),
+                    Row(children:[SizedBox(width: 25,),Text('Delivered')]),
+                    ]),
+                  isThreeLine: true,
+                  trailing: Column(children:[SizedBox(height: 35,),Text('08:25 pm')]),
+                  onTap: (){
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => ChatScreen(index,user,userList)),);
+                      refer.child('IceChat').child('UserData')
+                      .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
+                      .child('\"${userList[index]}\"')
+                      .set({
+                      '\"receive\"':"null",
+                    });
+                    },
+                )
+              ],
+          ),
+        );
+      }
+    );  
   }
 
   Widget users() {
@@ -128,7 +172,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ListTile(
-                  leading:ClipOval(child:Image.network(user['${userList[index]}']["photoUrl"].toString())),
+                  leading:ClipOval(child:CachedNetworkImage(imageUrl:user['${userList[index]}']["photoUrl"].toString(),progressIndicatorBuilder: (context, url, downloadProgress) =>CircularProgressIndicator(value: downloadProgress.progress),)),
                   title: Text(user['${userList[index]}']["Name"].toString()),
                   subtitle: Column(children:[
                     Row(children:[
@@ -152,11 +196,10 @@ class _HomePageState extends State<HomePage> {
                       .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
                       .child('\"${userList[index]}\"')
                       .set({
-                      '\"receive\"':"\"null\"",
-                      '\"receive_confirm\"':'\"null\"',
-                      '\"sent\"':'\"null\"',
-                      '\"sent_confirm\"':'\"null\"',
+                      '\"receive\"':"null",
                     });
+                    if(chatList.contains(userList[index])==false)
+                    chatList.add(userList[index]);
                     },
                 )
               ],
