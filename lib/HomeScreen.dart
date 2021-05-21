@@ -9,7 +9,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:icechat/ChatScreen.dart';
 import 'package:icechat/Register.dart';
 import 'package:path_provider/path_provider.dart';
-int k=0;
 class HomePage extends StatefulWidget {
   List<dynamic> chatList=[];
   var chatData={};
@@ -211,13 +210,17 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
           var last,ltime;
           getLastMessage();
+          //print(widget.chatData['\"${widget.chatList[index]}\"']);
           if(widget.chatList.isEmpty==false&&(widget.chatData['\"${widget.chatList[index]}\"']!=null))
           {
             last=widget.chatData['\"${widget.chatList[index]}\"'][widget.chatData['\"${widget.chatList[index]}\"'].length-1][0];
             ltime=widget.chatData['\"${widget.chatList[index]}\"'][widget.chatData['\"${widget.chatList[index]}\"'].length-1][2];
           }
           else
+          {
             last='Start a conversation';
+            ltime='';
+          }
           return Card(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +296,9 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
           var last,ltime;
           getLastMessage();
-          if(userList.isEmpty==false&&(widget.chatData['\"${userList[index]}\"']!=null))
+          //print(widget.chatData['\"${userList[index]}\"']);
+          //print((widget.chatData['\"${userList[index]}\"'] as List).isEmpty);
+          if(userList.isEmpty==false&&(widget.chatData['\"${userList[index]}\"'] as List).isEmpty==false)
           {
             //print(widget.chatData['\"${userList[index]}\"']);
             last=widget.chatData['\"${userList[index]}\"'][widget.chatData['\"${userList[index]}\"'].length-1][0];
