@@ -75,6 +75,13 @@ class _HomePageState extends State<HomePage> {
       //print(widget.chatData['\"Ej2d0oyOieVQoLt5WvOyPND4PiG3\"'][widget.chatData['\"Ej2d0oyOieVQoLt5WvOyPND4PiG3\"'].length-1][0]);
     }
   }
+  resetSave() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/message_backup.txt');
+    await file.writeAsString("");
+    print(msg.toString());
+    print('Message Backup Successful');
+  }
   _save(msg) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/chatList_backup.txt');
@@ -163,6 +170,8 @@ class _HomePageState extends State<HomePage> {
                       setState((){load=true;});
                       await GoogleSignIn().signOut();
                       await FirebaseAuth.instance.signOut();
+                      resetSave();
+                      _save('');
                       setState((){load=false;});
                       Navigator.push(context,MaterialPageRoute(builder: (context) => LoginScreen()));
                       },
@@ -193,7 +202,7 @@ class _HomePageState extends State<HomePage> {
         ),height: 100,width: 100,),)
         :TabBarView(
             children: [
-              Column(children: [widget.chatList.length!=null?chats():Container()],),
+              Column(children: [widget.chatList.isEmpty==false&&user!=null?chats():Column(children: [SizedBox(height:50),Text('Start a Conversation!')])],),
               Column(children: [users()],),
             ]
           )
@@ -208,9 +217,11 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       itemCount: widget.chatList.length,
       itemBuilder: (BuildContext context, int index) {
-          var last,ltime;
+          var last='Start a Conversation',ltime='';
           getLastMessage();
           //print(widget.chatData['\"${widget.chatList[index]}\"']);
+          if(widget.chatData.isEmpty==false)
+          {
           if(widget.chatList.isEmpty==false&&(widget.chatData['\"${widget.chatList[index]}\"']!=null))
           {
             last=widget.chatData['\"${widget.chatList[index]}\"'][widget.chatData['\"${widget.chatList[index]}\"'].length-1][0];
@@ -221,12 +232,17 @@ class _HomePageState extends State<HomePage> {
             last='Start a conversation';
             ltime='';
           }
+          }
           return Card(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ListTile(
-                  leading:ClipOval(child:Image.network(user['${widget.chatList[index]}']["photoUrl"].toString())),
+                  leading:ClipOval(child:
+                    CachedNetworkImage(
+                      imageUrl:user['${widget.chatList[index]}']["photoUrl"].toString(),
+                      progressIndicatorBuilder: (context, url, downloadProgress) =>CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => new Icon(Icons.error),)),
                   title: Text(user['${widget.chatList[index]}']["Name"].toString()),
                   subtitle: Column(children:[
                     Row(children:[
@@ -294,10 +310,12 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       itemCount: userList.length,
       itemBuilder: (BuildContext context, int index) {
-          var last,ltime;
+          var last='Start a conversation',ltime='';
           getLastMessage();
           //print(widget.chatData['\"${userList[index]}\"']);
           //print((widget.chatData['\"${userList[index]}\"'] as List).isEmpty);
+          if(widget.chatData.isEmpty==false)
+          {
           if(userList.isEmpty==false&&(widget.chatData['\"${userList[index]}\"'] as List).isEmpty==false)
           {
             //print(widget.chatData['\"${userList[index]}\"']);
@@ -308,6 +326,7 @@ class _HomePageState extends State<HomePage> {
           {
             last='Start a conversation';
             ltime='';
+          }
           }
           return Card(
           child: Column(
