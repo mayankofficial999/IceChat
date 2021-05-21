@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
           var last,ltime;
           getLastMessage();
-          if(widget.chatList.isEmpty==false&&(widget.chatData.isEmpty==false))
+          if(widget.chatList.isEmpty==false&&(widget.chatData['\"${widget.chatList[index]}\"']!=null))
           {
             last=widget.chatData['\"${widget.chatList[index]}\"'][widget.chatData['\"${widget.chatList[index]}\"'].length-1][0];
             ltime=widget.chatData['\"${widget.chatList[index]}\"'][widget.chatData['\"${widget.chatList[index]}\"'].length-1][2];
@@ -293,7 +293,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
           var last,ltime;
           getLastMessage();
-          if(userList.isEmpty==false&&(widget.chatData['\"${userList[index]}\"'].isEmpty==false))
+          if(userList.isEmpty==false&&(widget.chatData['\"${userList[index]}\"']!=null))
           {
             //print(widget.chatData['\"${userList[index]}\"']);
             last=widget.chatData['\"${userList[index]}\"'][widget.chatData['\"${userList[index]}\"'].length-1][0];
