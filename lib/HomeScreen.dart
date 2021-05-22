@@ -194,7 +194,15 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: load? 
+        body: Container(
+      constraints: BoxConstraints.expand(),
+        //Add Background Image
+        decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/background/homeBackground.jpg'),
+          fit: BoxFit.cover)
+        ),
+          child:load? 
         Center(child:SizedBox(child:CircularProgressIndicator(
           backgroundColor: Colors.white,
           valueColor: AlwaysStoppedAnimation(Colors.lightBlue),
@@ -206,6 +214,7 @@ class _HomePageState extends State<HomePage> {
               Column(children: [users()],),
             ]
           )
+      )
     )
     )
     );
@@ -238,6 +247,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ListTile(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200),),
                   leading:ClipOval(child:
                     CachedNetworkImage(
                       imageUrl:user['${widget.chatList[index]}']["photoUrl"].toString(),

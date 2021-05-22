@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 List msg;
 //Map savedChat={};
@@ -42,6 +43,7 @@ class ChatScreen extends StatefulWidget {
 }
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController input = new TextEditingController();
+  ScrollController _scrollController = new ScrollController();
   bool empty=true;
   var adder;
   final ins=FirebaseDatabase.instance;
@@ -118,9 +120,8 @@ class _ChatScreenState extends State<ChatScreen> {
       //message.remove(['Hello', 'receive', '13:10']);
       if(snap.value!='null')
       { 
-      DateTime now= new DateTime.now();
-      String currentTime;
-      currentTime=now.hour.toString()+':'+now.minute.toString()+' ';
+        DateTime now=new DateTime.now();
+        String currentTime= DateFormat.jm().format(now);
       setState(() {
         enable=true;
         temp=["${snap.value}","receive","$currentTime"];
@@ -147,16 +148,14 @@ class _ChatScreenState extends State<ChatScreen> {
     .child('\"${FirebaseAuth.instance.currentUser.uid}\"')
     .child('\"receive\"');
     loc.set(s);
-    DateTime now= new DateTime.now();
-    String currentTime;
-    currentTime=now.hour.toString()+':'+now.minute.toString()+' ';
-    widget.message.add(["$s","sent","$currentTime"]);
+    DateTime now=new DateTime.now();
+    String currentTime= DateFormat.jm().format(now);
+    widget.message.insert(0,["$s","sent","$currentTime"]);
     saver();
   }
   @override
   Widget build(BuildContext context) {
-    if(widget.c==0)
-    {
+    if(widget.c==0){
     reader();
     setState(() {});
     widget.c++;
@@ -216,7 +215,16 @@ class _ChatScreenState extends State<ChatScreen> {
           ]
         ),
       ),
-      body: Stack(children:[
+      body: Container(
+      constraints: BoxConstraints.expand(),
+        //Add Background Image
+        decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/background/chatBackground.jpg'),
+          fit: BoxFit.cover)
+        ),
+        child: 
+      Stack(children:[
         chatLayout(),
         Align(child:
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -224,7 +232,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(child:
                 TextFormField(textInputAction: TextInputAction.newline,
                   onChanged: (s){setState(() {empty=false;});},
-                  //onFieldSubmitted:(s){input.text=s;} ,
+                  //onFieldSubmitted:(s){if(input.text.trim().isEmpty==false){send(input.text.trim());setState(() {});input.text='';}} ,
                   controller: input,
                   maxLines: null,
                   decoration: new InputDecoration(
@@ -246,7 +254,13 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(child:
               FloatingActionButton(
                   child: input.text==''?Icon(Icons.mic,size: 30,):Icon(Icons.send_rounded,size: 30,),
-                  onPressed: (){if(input.text.trim().isEmpty==false){send(input.text.trim());setState(() {});input.text='';}}
+                  onPressed: (){if(input.text.trim().isEmpty==false){send(input.text.trim());setState(() {});input.text='';}
+                  _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent+30,
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeInOut
+                    );
+                  }
                 ),
               padding: EdgeInsets.only(bottom:20,right: 10),
               ),
@@ -255,17 +269,30 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
       ]),
     )
+    )
     );
   }
   Widget chatLayout(){
     receive();
     if(temp!=null&&enable==true)
-    widget.message.add(temp);
+    {
+    widget.message.insert(0,temp);
+    _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent+30,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut
+      );
+    }
     print(widget.message);
     enable=false;
     return Container(
-      child: 
+      child:SingleChildScrollView(
+          controller: _scrollController,
+          child:
         ListView.builder(
+          reverse: true,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: widget.message.length,
           itemBuilder: (BuildContext context, int index) {
             return Align(child:
@@ -289,17 +316,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.lightBlue[100],
+                  borderRadius: BorderRadius.circular(6),
+                  color: widget.message[index][1].toString().trim()=='receive'?Colors.grey[50]:Colors.cyan[200],
                   ),
-                padding: EdgeInsets.only(left:10,right: 10,bottom: 5,top:5),
-                margin: EdgeInsets.symmetric(vertical:1,horizontal: 5),
+                padding: EdgeInsets.only(left:10,right: 10,bottom: 2,top:2),
+                margin: EdgeInsets.symmetric(vertical:1,horizontal: 10),
                 constraints: BoxConstraints(minWidth: 50,maxWidth:MediaQuery.of(context).size.width*0.8,),
               ),
               alignment: widget.message[index][1].toString().trim()=='receive'?Alignment.centerLeft:Alignment.centerRight,
             );
             }
           )
-    );
+        ),
+        margin: EdgeInsets.only(bottom:70,top:20),
+      );
   }
 }
